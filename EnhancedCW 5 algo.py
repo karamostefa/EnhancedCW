@@ -1,4 +1,4 @@
-﻿"""
+"""
 consensus_simulators.py
 
 Provides three simple simulators (Enhanced CW-PoW, Basic CW-PoW, PoW, PoS, PBFT) for comparative experiments.
@@ -809,7 +809,255 @@ def run_pow(num_miners=NUM_MINERS, blocks_target=1, target_bits=20, seed=42):
     print(f"Active-Time Fraction (E): {avg_efficiency:.3f}")
 
     write_csv("pow_results.csv", ["Miner","Compute","Wait","Hashes","Wins","Msgs","Bytes","ResShare","P_win","F_i","Energy"], rows)
-    return {"time": total_time, "throughput": throughput, "avg_fairness": avg_fairness, "msgs_per_block": msgs_per_block, "bytes_per_block": bytes_per_block}
+    return {"time": total_time, "throughput": throughput, "avg_fairness": avg_fairness, "msgs_per_block": msgs_per_block, "bytes_per_block": bytes_per_block, "avg_energy": avg_energy}
+
+# -----------------------
+# 3b) GREEN-POW (Lasla et al., 2022) -- added for revision
+# -----------------------
+# Simplified reimplementation of the mechanism described in the published
+# abstract: after an "open" round in which all miners compete, the runner-up
+# (second-lowest final hash) is granted exclusive mining rights for the next
+# round, during which every other miner is idle. This is NOT the authors'
+# original code; it is our own re-implementation of the general mechanism,
+# built inside this paper's simulator so it is measured under the exact same
+# timing, message-size, and energy model as every other protocol in this
+# comparison (Section 5.5). See the Appendix for the full caveat.
+POW_TARGET = int("388599999999999999999999999999999999999999999999999000000000", 16)
+
+def run_green_pow(num_miners=NUM_MINERS, blocks_target=20, seed=5000):
+    """
+    Uses the SAME competitive race-with-early-exit architecture as run_pow()
+    (threads hash in a shared block round and stop as soon as any one of
+    them finds a solution), so that aggregate hashing effort -- and hence
+    energy -- is directly comparable to the classical PoW baseline. The only
+    difference from run_pow() is that, on an "exclusive" round, only the
+    previous round's runner-up is allowed to mine while everyone else stays
+    idle (bounded polling wait) for that round's duration; the runner-up is
+    approximated as the non-winning competitor with the most hash attempts
+    recorded at the moment the round ended (a reasonable, explicitly
+    documented proxy in a lightweight experimental simulator, see Appendix).
+    """
+    random.seed(seed)
+    miners_stats = [{"compute": 0.0, "wait": 0.0, "wins": 0, "hashes": 0, "msgs": 0, "bytes": 0} for _ in range(num_miners)]
+    lock = threading.Lock()
+    current_block = {"id": 0, "found": False, "exclusive": None}
+    progress = {}  # miner_id -> hash attempts so far in the current round
+    block_count = 0
+    start_time = now()
+
+    def miner_thread(i):
+        nonlocal block_count
+        rng = random.Random(seed + i * 10)
+        while True:
+            with lock:
+                if block_count >= blocks_target:
+                    break
+                blk_id = current_block["id"]
+                excl = current_block["exclusive"]
+            if excl is not None and i != excl:
+                # not eligible to mine this round: stay idle but online
+                t_idle0 = now()
+                while True:
+                    time.sleep(SLEEP_POLL)
+                    with lock:
+                        if blk_id != current_block["id"] or block_count >= blocks_target:
+                            break
+                with lock:
+                    miners_stats[i]["wait"] += (now() - t_idle0)
+                continue
+            local_start = now()
+            nonce = rng.randint(0, 1 << 3)
+            n_hashes = 0
+            while True:
+                h = hashlib.sha256(f"{blk_id}{i}{nonce}".encode()).hexdigest()
+                val = int(h, 16)
+                n_hashes += 1
+                if val <= POW_TARGET:
+                    with lock:
+                        if blk_id == current_block["id"] and not current_block["found"]:
+                            current_block["found"] = True
+                            miners_stats[i]["wins"] += 1
+                            block_count += 1
+                            miners_stats[i]["msgs"] += 1
+                            miners_stats[i]["bytes"] += POW_BLOCK_MSG_BYTES
+                            # runner-up proxy: most persistent non-winning competitor
+                            others = {k: v for k, v in progress.items() if k != i}
+                            runner_up = max(others, key=others.get) if others else None
+                            current_block["id"] += 1
+                            current_block["found"] = False
+                            current_block["exclusive"] = runner_up
+                            progress.clear()
+                    break
+                with lock:
+                    if blk_id != current_block["id"]:
+                        break
+                    progress[i] = n_hashes
+                nonce += 1
+            local_end = now()
+            with lock:
+                miners_stats[i]["compute"] += (local_end - local_start)
+                miners_stats[i]["hashes"] += n_hashes
+
+    threads = []
+    for i in range(num_miners):
+        t = threading.Thread(target=miner_thread, args=(i,))
+        t.start()
+        threads.append(t)
+    for t in threads:
+        t.join()
+
+    total_time = now() - start_time
+    total_hashes = sum(s["hashes"] for s in miners_stats) or 1
+    rows, fairness_list, energies, efficiencies = [], [], [], []
+    total_msgs = total_bytes = 0
+    for i, s in enumerate(miners_stats):
+        share = s["hashes"] / total_hashes
+        p_win = s["wins"] / blocks_target if blocks_target > 0 else 0
+        F_i = (p_win / share) if share > 0 else 0.0
+        fairness_list.append(F_i)
+        energy = s["compute"] * POWER_ACTIVE + s["wait"] * POWER_WAIT
+        energies.append(energy)
+        tot_t = s["compute"] + s["wait"]
+        efficiencies.append(1 - (s["wait"] / tot_t) if tot_t > 0 else 0.0)
+        total_msgs += s["msgs"]; total_bytes += s["bytes"]
+        rows.append([i + 1, s["compute"], s["wait"], s["hashes"], s["wins"], s["msgs"], s["bytes"], share, p_win, F_i, energy])
+
+    avg_fairness = sum(fairness_list) / len(fairness_list)
+    avg_energy = sum(energies) / len(energies)
+    avg_efficiency = sum(efficiencies) / len(efficiencies)
+    msgs_per_block = total_msgs / blocks_target if blocks_target > 0 else 0
+    bytes_per_block = total_bytes / blocks_target if blocks_target > 0 else 0
+    throughput = blocks_target / total_time if total_time > 0 else 0
+
+    print("=== Green-PoW (simplified reimplementation) Summary ===")
+    print(f"Total real time: {total_time:.3f}s, Throughput (blocks/sec): {throughput:.3f}")
+    print(f"Avg fairness ratio (mean F_i): {avg_fairness:.3f}")
+    print(f"Messages per block: {msgs_per_block:.2f}, Bytes per block: {bytes_per_block:.1f}")
+    print(f"Avg energy per miner (over runs): {avg_energy:.2f} units")
+    print(f"Active-Time Fraction (E): {avg_efficiency:.3f}")
+
+    write_csv("green_pow_results.csv", ["Miner","Compute","Wait","Hashes","Wins","Msgs","Bytes","ResShare","P_win","F_i","Energy"], rows)
+    return {"time": total_time, "throughput": throughput, "avg_fairness": avg_fairness,
+            "msgs_per_block": msgs_per_block, "bytes_per_block": bytes_per_block, "avg_energy": avg_energy}
+
+# -----------------------
+# 3c) PROOF-OF-EXPERIENCE (Masseport et al., 2023) -- added for revision
+# -----------------------
+# Simplified reimplementation of the mechanism described in the published
+# abstract: a miner's own target is relaxed (eased) in proportion to its
+# accumulated unsuccessful hashing effort, and reset to the base difficulty
+# once it wins. As with Green-PoW above, this is our own re-implementation
+# of the general idea, not the authors' code, run inside this paper's
+# simulator for a like-for-like comparison with the other baselines.
+POE_RELAX_PER_HASH = POW_TARGET * 2e-6  # calibration constant; see Appendix
+
+def run_proof_of_experience(num_miners=NUM_MINERS, blocks_target=20, seed=6000):
+    """
+    Uses the SAME competitive race-with-early-exit architecture as run_pow()
+    -- every round is "open" (all miners race in parallel and stop as soon as
+    any one of them wins) -- so aggregate hashing effort is directly
+    comparable to the classical PoW baseline. The only difference is that
+    each miner races against its OWN target, eased (increased) in proportion
+    to its accumulated unsuccessful hashing effort and reset to the base
+    difficulty whenever it wins, per the published mechanism.
+    """
+    random.seed(seed)
+    MAX_TARGET = (1 << 256) - 1
+    credit = [0] * num_miners
+    miners_stats = [{"compute": 0.0, "wait": 0.0, "wins": 0, "hashes": 0, "msgs": 0, "bytes": 0} for _ in range(num_miners)]
+    lock = threading.Lock()
+    current_block = {"id": 0, "found": False}
+    round_hashes = [0] * num_miners
+    block_count = 0
+    start_time = now()
+
+    def miner_thread(i):
+        nonlocal block_count
+        rng = random.Random(seed + i * 10)
+        while True:
+            with lock:
+                if block_count >= blocks_target:
+                    break
+                blk_id = current_block["id"]
+                my_target = min(POW_TARGET + credit[i], MAX_TARGET)
+                round_hashes[i] = 0
+            local_start = now()
+            nonce = rng.randint(0, 1 << 3)
+            n_hashes = 0
+            while True:
+                h = hashlib.sha256(f"{blk_id}{i}{nonce}".encode()).hexdigest()
+                val = int(h, 16)
+                n_hashes += 1
+                if val <= my_target:
+                    with lock:
+                        if blk_id == current_block["id"] and not current_block["found"]:
+                            current_block["found"] = True
+                            miners_stats[i]["wins"] += 1
+                            block_count += 1
+                            miners_stats[i]["msgs"] += 1
+                            miners_stats[i]["bytes"] += POW_BLOCK_MSG_BYTES
+                            round_hashes[i] = n_hashes
+                            # credit update: winner resets; everyone else accumulates
+                            # eased-target credit proportional to effort just spent
+                            for j in range(num_miners):
+                                if j == i:
+                                    credit[j] = 0
+                                else:
+                                    credit[j] = min(credit[j] + int(round_hashes[j] * POE_RELAX_PER_HASH), MAX_TARGET - POW_TARGET)
+                            current_block["id"] += 1
+                            current_block["found"] = False
+                    break
+                with lock:
+                    if blk_id != current_block["id"]:
+                        break
+                    round_hashes[i] = n_hashes
+                nonce += 1
+            local_end = now()
+            with lock:
+                miners_stats[i]["compute"] += (local_end - local_start)
+                miners_stats[i]["hashes"] += n_hashes
+
+    threads = []
+    for i in range(num_miners):
+        t = threading.Thread(target=miner_thread, args=(i,))
+        t.start()
+        threads.append(t)
+    for t in threads:
+        t.join()
+
+    total_time = now() - start_time
+    total_hashes = sum(s["hashes"] for s in miners_stats) or 1
+    rows, fairness_list, energies, efficiencies = [], [], [], []
+    total_msgs = total_bytes = 0
+    for i, s in enumerate(miners_stats):
+        share = s["hashes"] / total_hashes
+        p_win = s["wins"] / blocks_target if blocks_target > 0 else 0
+        F_i = (p_win / share) if share > 0 else 0.0
+        fairness_list.append(F_i)
+        energy = s["compute"] * POWER_ACTIVE + s["wait"] * POWER_WAIT
+        energies.append(energy)
+        tot_t = s["compute"] + s["wait"]
+        efficiencies.append(1 - (s["wait"] / tot_t) if tot_t > 0 else 0.0)
+        total_msgs += s["msgs"]; total_bytes += s["bytes"]
+        rows.append([i + 1, s["compute"], s["wait"], s["hashes"], s["wins"], s["msgs"], s["bytes"], share, p_win, F_i, energy])
+
+    avg_fairness = sum(fairness_list) / len(fairness_list)
+    avg_energy = sum(energies) / len(energies)
+    avg_efficiency = sum(efficiencies) / len(efficiencies)
+    msgs_per_block = total_msgs / blocks_target if blocks_target > 0 else 0
+    bytes_per_block = total_bytes / blocks_target if blocks_target > 0 else 0
+    throughput = blocks_target / total_time if total_time > 0 else 0
+
+    print("=== Proof-of-Experience (simplified reimplementation) Summary ===")
+    print(f"Total real time: {total_time:.3f}s, Throughput (blocks/sec): {throughput:.3f}")
+    print(f"Avg fairness ratio (mean F_i): {avg_fairness:.3f}")
+    print(f"Messages per block: {msgs_per_block:.2f}, Bytes per block: {bytes_per_block:.1f}")
+    print(f"Avg energy per miner (over runs): {avg_energy:.2f} units")
+    print(f"Active-Time Fraction (E): {avg_efficiency:.3f}")
+
+    write_csv("proof_of_experience_results.csv", ["Miner","Compute","Wait","Hashes","Wins","Msgs","Bytes","ResShare","P_win","F_i","Energy"], rows)
+    return {"time": total_time, "throughput": throughput, "avg_fairness": avg_fairness,
+            "msgs_per_block": msgs_per_block, "bytes_per_block": bytes_per_block, "avg_energy": avg_energy}
 
 # -----------------------
 # 4) SIMPLE POS (add comm accounting)
@@ -1076,6 +1324,14 @@ if __name__ == "__main__":
 
     print("Running standard PoW...")
     pow_stats = run_pow(num_miners=NUM_MINERS, blocks_target=1, target_bits=20, seed=2000)
+    print()
+
+    print("Running Green-PoW (extended baseline)...")
+    green_pow_stats = run_green_pow(num_miners=NUM_MINERS, blocks_target=20, seed=5000)
+    print()
+
+    print("Running Proof-of-Experience (extended baseline)...")
+    poe_stats = run_proof_of_experience(num_miners=NUM_MINERS, blocks_target=20, seed=6000)
     print()
 
     print("Running PoS...")
