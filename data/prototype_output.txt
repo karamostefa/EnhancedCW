@@ -1,0 +1,309 @@
+﻿Running enhanced CW-PoW ...
+=== Enhanced CW-PoW Summary ===
+Initial params (NbrR, NbrS): (6,3)
+Final params after adaptation (NbrR, NbrS): (11,1)
+Avg total time per miner (s, all 5 blocks): 0.0617
+Time per block (s): 0.0123
+Throughput (blocks/s, est): 81.0428
+Avg fairness (mean F_i): 0.3138
+Messages per block (total net): 61.00
+Bytes per block (approx): 17329.4
+Avg energy per miner per round: 0.1713 units
+Avg energy per miner per block: 1.8841 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 0.901
+
+Running CW-PoW ...
+=== CW-PoW Summary (multi-run) ===
+Avg total time per miner (all 5 blocks): 0.22 s
+Time per block: 0.0435 s
+System throughput: 23.0047 blocks/s
+Avg fairness (mean F_i): 0.3099
+Messages per block (total network broadcasts): 30.00
+Bytes per block (approx): 21384.0 bytes
+Avg energy per miner per round: 0.47 units
+Avg energy per miner per block: 2.35 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 0.856
+
+Running standard PoW...
+=== PoW Summary ===
+Total real time: 0.123s, Throughput (blocks/sec): 8.105
+Avg fairness ratio (mean F_i): 0.322
+Messages per block (broadcasts): 1.00, Bytes per block: 1000000.0
+Avg energy per miner (over runs): 2.62 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 0.300
+
+Running Green-PoW (extended baseline)...
+=== Green-PoW (simplified reimplementation) Summary ===
+Total real time: 8.784s, Throughput (blocks/sec): 2.277
+Avg fairness ratio (mean F_i): 1.438
+Messages per block: 1.00, Bytes per block: 1000000.0
+Avg energy per miner (over runs): 365.55 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 0.398
+
+Running Proof-of-Experience (extended baseline)...
+=== Proof-of-Experience (simplified reimplementation) Summary ===
+Total real time: 6.408s, Throughput (blocks/sec): 3.121
+Avg fairness ratio (mean F_i): 1.095
+Messages per block: 1.00, Bytes per block: 1000000.0
+Avg energy per miner (over runs): 590.08 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 1.000
+
+Running PoS...
+=== PoS Summary ===
+Total real time: 1.598s, Throughput (blocks/sec): 31.286
+Avg fairness ratio (mean F_i): 0.934
+Messages per block: 12.00, Bytes per block: 4200.0
+Avg energy per miner (over runs): 3.18 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 1.000
+
+Running PBFT...
+=== PBFT Summary ===
+Total real time: 1.901s, Throughput (blocks/sec): 21.045
+Avg fairness ratio (mean F_i): 1.000
+Messages per block: 27.00, Bytes per block: 20500.0
+Avg energy per miner (over runs): 14.56 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 1.000
+
+All simulations completed. CSV files generated for each algorithm.
+
+Running APT initial-parameter ablation study ...
+=== Enhanced CW-PoW Summary ===
+Initial params (NbrR, NbrS): (2,1)
+Final params after adaptation (NbrR, NbrS): (10,1)
+Avg total time per miner (s, all 8 blocks): 0.0137
+Time per block (s): 0.0017
+Throughput (blocks/s, est): 583.4182
+Avg fairness (mean F_i): 0.0834
+Messages per block (total net): 39.00
+Bytes per block (approx): 9404.5
+Avg energy per miner per round: 0.1171 units
+Avg energy per miner per block: 1.1714 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 1.000
+(NbrR0= 2, NbrS0= 1) -> final=(10,1) Th=583.418 TT=0.014 F=0.083 AEM/round=0.117 MB=39.0
+=== Enhanced CW-PoW Summary ===
+Initial params (NbrR, NbrS): (4,2)
+Final params after adaptation (NbrR, NbrS): (12,1)
+Avg total time per miner (s, all 8 blocks): 0.0224
+Time per block (s): 0.0028
+Throughput (blocks/s, est): 357.6951
+Avg fairness (mean F_i): 0.0904
+Messages per block (total net): 48.75
+Bytes per block (approx): 12384.9
+Avg energy per miner per round: 0.1050 units
+Avg energy per miner per block: 1.2597 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 0.975
+(NbrR0= 4, NbrS0= 2) -> final=(12,1) Th=357.695 TT=0.022 F=0.090 AEM/round=0.105 MB=48.8
+=== Enhanced CW-PoW Summary ===
+Initial params (NbrR, NbrS): (6,3)
+Final params after adaptation (NbrR, NbrS): (12,1)
+Avg total time per miner (s, all 8 blocks): 0.0557
+Time per block (s): 0.0070
+Throughput (blocks/s, est): 143.6322
+Avg fairness (mean F_i): 0.1197
+Messages per block (total net): 63.25
+Bytes per block (approx): 16974.4
+Avg energy per miner per round: 0.1278 units
+Avg energy per miner per block: 1.5342 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 0.928
+(NbrR0= 6, NbrS0= 3) -> final=(12,1) Th=143.632 TT=0.056 F=0.120 AEM/round=0.128 MB=63.2
+=== Enhanced CW-PoW Summary ===
+Initial params (NbrR, NbrS): (8,4)
+Final params after adaptation (NbrR, NbrS): (12,6)
+Avg total time per miner (s, all 8 blocks): 0.8905
+Time per block (s): 0.1113
+Throughput (blocks/s, est): 8.9839
+Avg fairness (mean F_i): 0.3705
+Messages per block (total net): 211.75
+Bytes per block (approx): 65667.9
+Avg energy per miner per round: 0.6288 units
+Avg energy per miner per block: 7.5452 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 0.781
+(NbrR0= 8, NbrS0= 4) -> final=(12,6) Th=8.984 TT=0.890 F=0.371 AEM/round=0.629 MB=211.8
+=== Enhanced CW-PoW Summary ===
+Initial params (NbrR, NbrS): (10,5)
+Final params after adaptation (NbrR, NbrS): (12,6)
+Avg total time per miner (s, all 8 blocks): 1.4879
+Time per block (s): 0.1860
+Throughput (blocks/s, est): 5.3768
+Avg fairness (mean F_i): 0.4905
+Messages per block (total net): 281.25
+Bytes per block (approx): 87792.6
+Avg energy per miner per round: 0.9793 units
+Avg energy per miner per block: 11.7515 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 0.778
+(NbrR0=10, NbrS0= 5) -> final=(12,6) Th=5.377 TT=1.488 F=0.490 AEM/round=0.979 MB=281.2
+=== Enhanced CW-PoW Summary ===
+Initial params (NbrR, NbrS): (12,6)
+Final params after adaptation (NbrR, NbrS): (12,6)
+Avg total time per miner (s, all 8 blocks): 1.6419
+Time per block (s): 0.2052
+Throughput (blocks/s, est): 4.8725
+Avg fairness (mean F_i): 0.4904
+Messages per block (total net): 295.00
+Bytes per block (approx): 91870.0
+Avg energy per miner per round: 1.0667 units
+Avg energy per miner per block: 12.8004 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 0.776
+(NbrR0=12, NbrS0= 6) -> final=(12,6) Th=4.873 TT=1.642 F=0.490 AEM/round=1.067 MB=295.0
+=== Enhanced CW-PoW Summary ===
+Initial params (NbrR, NbrS): (6,1)
+Final params after adaptation (NbrR, NbrS): (12,1)
+Avg total time per miner (s, all 8 blocks): 0.0217
+Time per block (s): 0.0027
+Throughput (blocks/s, est): 369.4580
+Avg fairness (mean F_i): 0.0834
+Messages per block (total net): 54.50
+Bytes per block (approx): 13655.4
+Avg energy per miner per round: 0.1059 units
+Avg energy per miner per block: 1.2706 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 1.000
+(NbrR0= 6, NbrS0= 1) -> final=(12,1) Th=369.458 TT=0.022 F=0.083 AEM/round=0.106 MB=54.5
+=== Enhanced CW-PoW Summary ===
+Initial params (NbrR, NbrS): (6,6)
+Final params after adaptation (NbrR, NbrS): (12,6)
+Avg total time per miner (s, all 8 blocks): 1.2537
+Time per block (s): 0.1567
+Throughput (blocks/s, est): 6.3813
+Avg fairness (mean F_i): 0.4904
+Messages per block (total net): 232.00
+Bytes per block (approx): 74592.2
+Avg energy per miner per round: 0.8357 units
+Avg energy per miner per block: 10.0286 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 0.777
+(NbrR0= 6, NbrS0= 6) -> final=(12,6) Th=6.381 TT=1.254 F=0.490 AEM/round=0.836 MB=232.0
+=== Enhanced CW-PoW Summary ===
+Initial params (NbrR, NbrS): (2,6)
+Final params after adaptation (NbrR, NbrS): (10,1)
+Avg total time per miner (s, all 8 blocks): 0.1068
+Time per block (s): 0.0134
+Throughput (blocks/s, est): 74.8788
+Avg fairness (mean F_i): 0.8916
+Messages per block (total net): 60.25
+Bytes per block (approx): 19828.9
+Avg energy per miner per round: 0.1885 units
+Avg energy per miner per block: 1.8852 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 0.846
+(NbrR0= 2, NbrS0= 6) -> final=(10,1) Th=74.879 TT=0.107 F=0.892 AEM/round=0.189 MB=60.2
+
+Running Byzantine withholding robustness study ...
+=== Enhanced CW-PoW Summary ===
+Initial params (NbrR, NbrS): (6,3)
+Final params after adaptation (NbrR, NbrS): (12,1)
+Avg total time per miner (s, all 8 blocks): 0.0612
+Time per block (s): 0.0076
+Throughput (blocks/s, est): 130.7969
+Avg fairness (mean F_i): 0.1197
+Messages per block (total net): 63.25
+Bytes per block (approx): 16974.4
+Avg energy per miner per round: 0.1310 units
+Avg energy per miner per block: 1.5724 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 0.925
+withhold_frac=0.0 -> Th=130.797 TT=0.061 F=0.120 AEM/round=0.131
+=== Enhanced CW-PoW Summary ===
+Initial params (NbrR, NbrS): (6,3)
+Final params after adaptation (NbrR, NbrS): (12,1)
+Avg total time per miner (s, all 8 blocks): 0.1216
+Time per block (s): 0.0152
+Throughput (blocks/s, est): 65.7871
+Avg fairness (mean F_i): 0.1598
+Messages per block (total net): 63.25
+Bytes per block (approx): 16974.4
+Avg energy per miner per round: 0.1261 units
+Avg energy per miner per block: 1.5132 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 0.831
+withhold_frac=0.1 -> Th=65.787 TT=0.122 F=0.160 AEM/round=0.126
+=== Enhanced CW-PoW Summary ===
+Initial params (NbrR, NbrS): (6,3)
+Final params after adaptation (NbrR, NbrS): (12,1)
+Avg total time per miner (s, all 8 blocks): 0.1269
+Time per block (s): 0.0159
+Throughput (blocks/s, est): 63.0333
+Avg fairness (mean F_i): 0.1069
+Messages per block (total net): 61.88
+Bytes per block (approx): 16886.4
+Avg energy per miner per round: 0.1298 units
+Avg energy per miner per block: 1.5574 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 0.829
+withhold_frac=0.2 -> Th=63.033 TT=0.127 F=0.107 AEM/round=0.130
+=== Enhanced CW-PoW Summary ===
+Initial params (NbrR, NbrS): (6,3)
+Final params after adaptation (NbrR, NbrS): (12,1)
+Avg total time per miner (s, all 8 blocks): 0.1230
+Time per block (s): 0.0154
+Throughput (blocks/s, est): 65.0445
+Avg fairness (mean F_i): 0.1116
+Messages per block (total net): 62.62
+Bytes per block (approx): 16934.4
+Avg energy per miner per round: 0.1265 units
+Avg energy per miner per block: 1.5180 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 0.833
+withhold_frac=0.3 -> Th=65.044 TT=0.123 F=0.112 AEM/round=0.127
+=== Enhanced CW-PoW Summary ===
+Initial params (NbrR, NbrS): (6,3)
+Final params after adaptation (NbrR, NbrS): (12,1)
+Avg total time per miner (s, all 8 blocks): 0.1271
+Time per block (s): 0.0159
+Throughput (blocks/s, est): 62.9271
+Avg fairness (mean F_i): 0.3177
+Messages per block (total net): 59.88
+Bytes per block (approx): 16758.4
+Avg energy per miner per round: 0.1315 units
+Avg energy per miner per block: 1.5779 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 0.833
+withhold_frac=0.4 -> Th=62.927 TT=0.127 F=0.318 AEM/round=0.131
+
+Running network delay-spike robustness study ...
+=== Enhanced CW-PoW Summary ===
+Initial params (NbrR, NbrS): (6,3)
+Final params after adaptation (NbrR, NbrS): (12,1)
+Avg total time per miner (s, all 8 blocks): 0.0603
+Time per block (s): 0.0075
+Throughput (blocks/s, est): 132.7505
+Avg fairness (mean F_i): 0.1197
+Messages per block (total net): 63.25
+Bytes per block (approx): 16974.4
+Avg energy per miner per round: 0.1306 units
+Avg energy per miner per block: 1.5668 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 0.926
+spike_prob=0.0 spike_sec=0.00 -> Th=132.751 TT=0.060 F=0.120
+=== Enhanced CW-PoW Summary ===
+Initial params (NbrR, NbrS): (6,3)
+Final params after adaptation (NbrR, NbrS): (12,1)
+Avg total time per miner (s, all 8 blocks): 0.1100
+Time per block (s): 0.0137
+Throughput (blocks/s, est): 72.7287
+Avg fairness (mean F_i): 0.1197
+Messages per block (total net): 63.25
+Bytes per block (approx): 16974.4
+Avg energy per miner per round: 0.1392 units
+Avg energy per miner per block: 1.6700 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 0.880
+spike_prob=0.1 spike_sec=0.05 -> Th=72.729 TT=0.110 F=0.120
+=== Enhanced CW-PoW Summary ===
+Initial params (NbrR, NbrS): (6,3)
+Final params after adaptation (NbrR, NbrS): (12,1)
+Avg total time per miner (s, all 8 blocks): 0.2189
+Time per block (s): 0.0274
+Throughput (blocks/s, est): 36.5424
+Avg fairness (mean F_i): 0.2098
+Messages per block (total net): 63.25
+Bytes per block (approx): 16974.4
+Avg energy per miner per round: 0.1511 units
+Avg energy per miner per block: 1.8134 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 0.814
+spike_prob=0.3 spike_sec=0.05 -> Th=36.542 TT=0.219 F=0.210
+=== Enhanced CW-PoW Summary ===
+Initial params (NbrR, NbrS): (6,3)
+Final params after adaptation (NbrR, NbrS): (12,1)
+Avg total time per miner (s, all 8 blocks): 0.5401
+Time per block (s): 0.0675
+Throughput (blocks/s, est): 14.8126
+Avg fairness (mean F_i): 0.2098
+Messages per block (total net): 63.25
+Bytes per block (approx): 16974.4
+Avg energy per miner per round: 0.1966 units
+Avg energy per miner per block: 2.3598 units
+Duty cycle (D = T_compute / (T_compute + T_wait)): 0.790
+spike_prob=0.3 spike_sec=0.15 -> Th=14.813 TT=0.540 F=0.210
+
+All robustness/ablation studies completed. CSV files generated.

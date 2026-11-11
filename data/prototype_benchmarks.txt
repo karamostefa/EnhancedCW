@@ -1,0 +1,6 @@
+one hash attempt, one thread alone: 1.28 us
+one hash attempt, 10 threads together: 7.63 us  (x6.0)
+PoW run, ten threads: wall-clock time per hash and thread 17.05 us
+PoW              time/block    415.8 ms   energy/block   38.40   msgs    1.0   bytes    1000000
+CW-PoW           time/block    176.8 ms   energy/block    2.42   msgs   30.0   bytes      21384
+Enhanced CW-PoW  time/block     53.4 ms   energy/block    1.53   msgs   62.3   bytes      16583

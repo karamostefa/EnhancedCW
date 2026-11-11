@@ -1,0 +1,9 @@
+﻿VALIDATION of the event-driven model
+  message counts 36 / 61 / 51 / 43 = counts of the multi-threaded prototype
+  PoS 12 msgs / 4 200 B, PBFT 27 msgs / 20 500 B, basic CW-PoW 30 msgs / 21 384 B = prototype values
+  hashing energy / miner / block: simulated 3.554   Monte Carlo of the rule 3.591
+  mean quorum wait / surviving miner / round: model 2.327 ms   order-statistics Monte Carlo 2.408 ms
+  PoW race at equal expected work: E = 12.184   analytic P_a*R*t_round = 12.000
+  PoW block time at the prototype target: 333.0 ms   (prototype, 20-block matched run: 348 ms)
+  all checks passed
+done in 3 s
